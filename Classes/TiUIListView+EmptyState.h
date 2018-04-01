@@ -19,7 +19,7 @@
 
 - (void)setPlaceholder:(id)arguments;
 
-- (void)reloadPlaceholder:(id)unused;
+- (void)togglePlaceholder:(id)visible;
 
 @end
 

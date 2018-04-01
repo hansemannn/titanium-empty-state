@@ -5,7 +5,6 @@
 //  Created by Hans Knöchel on 01.04.18.
 //
 
-#import "TiUIAttributedStringProxy.h"
 #import "TiUIListView+EmptyState.h"
 #import "TiUIViewProxy.h"
 
@@ -25,11 +24,16 @@
   [self replaceValue:arguments forKey:@"placeholder" notification:NO];
 }
 
-- (void)reloadPlaceholder:(id)unused
+- (void)togglePlaceholder:(id)visible
 {
-  UITableView *tableView = [(TiUIListView *)[self view] tableView];
+  ENSURE_SINGLE_ARG(visible, NSNumber);
 
-  [tableView reloadData];
+  UITableView *tableView = [(TiUIListView *)[self view] tableView];
+  [self setValue:visible forKey:@"_placeholderVisible"];
+  
+  TiThreadPerformOnMainThread(^{
+    [tableView reloadData];
+  }, NO);
 }
 
 @end
@@ -51,35 +55,38 @@
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-  TiUIAttributedStringProxy *title = [self placeholderPropertyForAttribute:@"title" withType:[TiUIAttributedStringProxy class]];
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id title = [self placeholderPropertyForAttribute:@"title" withType:[TiUIAttributedStringProxy class]];
 
   if (title == nil) {
     return nil;
   }
 
-  return title.attributedString;
+  return [title valueForKey:@"attributedString"];
 }
 
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
-  TiUIAttributedStringProxy *description = [self placeholderPropertyForAttribute:@"description" withType:[TiUIAttributedStringProxy class]];
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id description = [self placeholderPropertyForAttribute:@"description" withType:[TiUIAttributedStringProxy class]];
 
   if (description == nil) {
     return nil;
   }
 
-  return description.attributedString;
+  return [description valueForKey:@"attributedString"];
 }
 
 - (NSAttributedString *)buttonTitleForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
-  TiUIAttributedStringProxy *buttonTitle = [self placeholderPropertyForAttribute:@"buttonTitle" withType:[TiUIAttributedStringProxy class]];
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id buttonTitle = [self placeholderPropertyForAttribute:@"buttonTitle" withType:[TiUIAttributedStringProxy class]];
 
   if (buttonTitle == nil) {
     return nil;
   }
 
-  return buttonTitle.attributedString;
+  return [buttonTitle valueForKey:@"attributedString"];
 }
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
@@ -104,22 +111,11 @@
   return [TiUtils colorValue:backgroundColor].color;
 }
 
-- (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
-{
-  TiUIViewProxy *customView = [self placeholderPropertyForAttribute:@"customView" withType:[TiUIViewProxy class]];
-
-  if (customView == nil) {
-    return nil;
-  }
-
-  return customView.view;
-}
-
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
-  NSNumber *visible = [self placeholderPropertyForAttribute:@"visible" withType:[NSNumber class]];
+  NSNumber *_placeholderVisible = [[self proxy] valueForKey:@"_placeholderVisible"];
 
-  return visible.boolValue;
+  return [TiUtils boolValue:_placeholderVisible];
 }
 
 - (BOOL)emptyDataSetShouldAllowTouch:(UIScrollView *)scrollView

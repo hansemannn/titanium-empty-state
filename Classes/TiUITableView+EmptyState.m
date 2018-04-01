@@ -5,7 +5,6 @@
 //  Created by Hans Knöchel on 01.04.18.
 //
 
-#import "TiUIAttributedStringProxy.h"
 #import "TiUITableView+EmptyState.h"
 #import "TiUIViewProxy.h"
 
@@ -41,85 +40,77 @@
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
   NSString *image = [self placeholderPropertyForAttribute:@"image" withType:[NSString class]];
-
+  
   if (image == nil) {
     return nil;
   }
-
+  
   return [TiUtils image:image proxy:self.proxy];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-  TiUIAttributedStringProxy *title = [self placeholderPropertyForAttribute:@"title" withType:[TiUIAttributedStringProxy class]];
-
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id title = [self placeholderPropertyForAttribute:@"title" withType:[TiUIAttributedStringProxy class]];
+  
   if (title == nil) {
     return nil;
   }
-
-  return title.attributedString;
+  
+  return [title valueForKey:@"attributedString"];
 }
 
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
-  TiUIAttributedStringProxy *description = [self placeholderPropertyForAttribute:@"description" withType:[TiUIAttributedStringProxy class]];
-
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id description = [self placeholderPropertyForAttribute:@"description" withType:[TiUIAttributedStringProxy class]];
+  
   if (description == nil) {
     return nil;
   }
-
-  return description.attributedString;
+  
+  return [description valueForKey:@"attributedString"];
 }
 
 - (NSAttributedString *)buttonTitleForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
-  TiUIAttributedStringProxy *buttonTitle = [self placeholderPropertyForAttribute:@"buttonTitle" withType:[TiUIAttributedStringProxy class]];
-
+  Class TiUIAttributedStringProxy = NSClassFromString(@"TiUIAttributedStringProxy");
+  id buttonTitle = [self placeholderPropertyForAttribute:@"buttonTitle" withType:[TiUIAttributedStringProxy class]];
+  
   if (buttonTitle == nil) {
     return nil;
   }
-
-  return buttonTitle.attributedString;
+  
+  return [buttonTitle valueForKey:@"attributedString"];
 }
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
   NSString *buttonImage = [self placeholderPropertyForAttribute:@"buttonImage" withType:[NSString class]];
-
+  
   if (buttonImage == nil) {
     return nil;
   }
-
+  
   return [TiUtils image:buttonImage proxy:self.proxy];
 }
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
   NSString *backgroundColor = [self placeholderPropertyForAttribute:@"backgroundColor" withType:[NSString class]];
-
+  
   if (backgroundColor == nil) {
     return nil;
   }
-
+  
   return [TiUtils colorValue:backgroundColor].color;
-}
-
-- (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
-{
-  TiUIViewProxy *customView = [self placeholderPropertyForAttribute:@"customView" withType:[TiUIViewProxy class]];
-
-  if (customView == nil) {
-    return nil;
-  }
-
-  return customView.view;
 }
 
 - (BOOL)emptyDataSetShouldDisplay:(UIScrollView *)scrollView
 {
-  NSNumber *visible = [self placeholderPropertyForAttribute:@"visible" withType:[NSNumber class]];
-
-  return visible.boolValue;
+  NSNumber *_placeholderVisible = [[self proxy] valueForKey:@"_placeholderVisible"];
+  
+  return [TiUtils boolValue:_placeholderVisible];
 }
 
 - (BOOL)emptyDataSetShouldAllowTouch:(UIScrollView *)scrollView
@@ -130,7 +121,7 @@
 - (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
 {
   NSNumber *scrollEnabled = [self placeholderPropertyForAttribute:@"scrollEnabled" withType:[NSNumber class]];
-
+  
   return scrollEnabled.boolValue;
 }
 
@@ -149,23 +140,23 @@
 - (id)placeholderPropertyForAttribute:(id)attribute withType:(Class)type
 {
   NSDictionary *placeholder = [[self proxy] valueForKey:@"placeholder"];
-
+  
   if (placeholder == nil) {
     return nil;
   }
-
+  
   id property = placeholder[attribute];
-
+  
   if (property == nil) {
     return nil;
   }
-
+  
   if (![property isKindOfClass:type]) {
     [self throwException:@"Invalid placeholder property type"
                subreason:[NSString stringWithFormat:@"Expected %@, got %@", NSStringFromClass(type), NSStringFromClass([property class])]
                 location:CODELOCATION];
   }
-
+  
   return placeholder[attribute];
 }
 
