@@ -20,13 +20,13 @@ any Ti.UI.TableView and Ti.UI.ListView by simply using the `placeholder` diction
 - `buttonTitle` (String)
 - `buttonImage` (String)
 - `backgroundColor` (String)
-- `customView` (Ti.UI.View)
-- `visible` (String)
 - `scrollEnabled` (String)
 
 ### Methods
 
-#### `reloadPlaceholder()`
+#### `togglePlaceholder(show)`
+
+Passing `true` will **show** the placeholder, passing `false` will **hide** it.
 
 ### Events
 
