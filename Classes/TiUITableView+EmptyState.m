@@ -24,11 +24,16 @@
   [self replaceValue:arguments forKey:@"placeholder" notification:NO];
 }
 
-- (void)reloadPlaceholder:(id)unused
+- (void)togglePlaceholder:(id)visible
 {
-  UITableView *tableView = [(TiUITableView *)[self view] tableView];
-
-  [tableView reloadData];
+  ENSURE_SINGLE_ARG(visible, NSNumber);
+  
+  UITableView *tableView = [(TiUIListView *)[self view] tableView];
+  [self setValue:visible forKey:@"_placeholderVisible"];
+  
+  TiThreadPerformOnMainThread(^{
+    [tableView reloadData];
+  }, NO);
 }
 
 @end
