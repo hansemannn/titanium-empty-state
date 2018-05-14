@@ -28,7 +28,7 @@
 {
   ENSURE_SINGLE_ARG(visible, NSNumber);
   
-  UITableView *tableView = [(TiUIListView *)[self view] tableView];
+  UITableView *tableView = [(TiUITableView *)[self view] tableView];
   [self setValue:visible forKey:@"_placeholderVisible"];
   
   TiThreadPerformOnMainThread(^{
