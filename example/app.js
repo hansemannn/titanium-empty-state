@@ -1,4 +1,4 @@
-require("ti.emptystate");
+require('ti.emptystate');
 
 var win = Ti.UI.createWindow({
     backgroundColor: '#fff',
