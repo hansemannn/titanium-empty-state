@@ -1,3 +1,5 @@
+require('ti.emptystate');
+
 var win = Ti.UI.createWindow({
     backgroundColor: '#fff',
     title: 'Placeholder Example'
